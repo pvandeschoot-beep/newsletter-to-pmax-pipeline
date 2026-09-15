@@ -3,7 +3,7 @@
     clients    toon de bekende klantprofielen
     init       zet een nieuw klantprofiel en/of campagne op
     validate   campaign.yaml tegen de PMax-specs (de poort voor oplevering)
-    images     bronbeelden -> alle PMax-ratio's, met en zonder logo
+    images     bronbeelden (vaak uit nieuwsbrief) -> PMax-ratio's + logo
     handoff    handoff-mail als markdown
     export     review-CSV met alle tekst-assets
     bundle     zip per campagne
@@ -144,6 +144,25 @@ def cmd_validate(args: argparse.Namespace) -> int:
     return 1 if (n_warn and args.strict) else 0
 
 
+# Extensies die nieuwsbrief-mails vaak als bronbeeld leveren (png/jpg/…).
+_IMAGE_SOURCE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+
+
+def _collect_image_sources(input_dir: Path, glob_pat: str) -> list[Path]:
+    """Verzamel bronbeelden; standaard alle gangbare image-extensies.
+
+    --glob '*' (default) filtert op _IMAGE_SOURCE_EXTS. Een expliciet patroon
+    zoals '*.png' blijft gewoon Path.glob.
+    """
+    if glob_pat == "*":
+        return sorted(
+            p
+            for p in input_dir.iterdir()
+            if p.is_file() and p.suffix.lower() in _IMAGE_SOURCE_EXTS
+        )
+    return sorted(p for p in input_dir.glob(glob_pat) if p.is_file())
+
+
 def cmd_images(args: argparse.Namespace) -> int:
     logo = args.logo
     ratio, position = 0.28, "bottom-left"
@@ -163,7 +182,7 @@ def cmd_images(args: argparse.Namespace) -> int:
         print(f"logo niet gevonden: {logo}", file=sys.stderr)
         return 2
 
-    sources = sorted(p for p in args.input_dir.glob(args.glob) if p.is_file())
+    sources = _collect_image_sources(args.input_dir, args.glob)
     if not sources:
         print(f"geen bronbeelden in {args.input_dir} (glob {args.glob})", file=sys.stderr)
         return 1
@@ -242,12 +261,19 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--strict", action="store_true", help="laat ook warnings falen")
     p.set_defaults(func=cmd_validate)
 
-    p = sub.add_parser("images", help="genereer alle PMax-ratio's uit bronbeelden")
+    p = sub.add_parser(
+        "images",
+        help="genereer alle PMax-ratio's uit bronbeelden (vaak uit de nieuwsbrief)",
+    )
     p.add_argument("--input-dir", type=Path, required=True)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--client", default=None, help="gebruikt logo en brand-instellingen van deze klant")
     p.add_argument("--logo", type=Path, default=None, help="overschrijft het logo uit het klantprofiel")
-    p.add_argument("--glob", default="*.png")
+    p.add_argument(
+        "--glob",
+        default="*",
+        help="bestandspatroon; default '*' = png/jpg/jpeg/webp/gif in de map",
+    )
     p.set_defaults(func=cmd_images)
 
     p = sub.add_parser("handoff", help="genereer de handoff-mail")

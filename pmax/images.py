@@ -2,6 +2,10 @@
 
 Vervangt de macOS-only `sips`-stap uit de oude workflow door Pillow, zodat
 dezelfde code op een laptop en in CI draait.
+
+Verwacht bronbeelden die al groot genoeg zijn (vaak nieuwsbrief + evt.
+AI-upscale). Upscale zelf zit niet hier — zie AGENT.md §5b en
+`NEWSLETTER_SOURCE_MIN_SHORT_SIDE_PX` in specs.py.
 """
 
 from __future__ import annotations

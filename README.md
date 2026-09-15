@@ -2,13 +2,18 @@
 
 Van de **laatste nieuwsbrief van een klant** naar reviewbaar Performance Max-
 materiaal: copy per thema, beelden in alle PMax-formaten, logo-overlay en een
-handoff naar het team.
+handoff naar het team. **Bronbeelden komen standaard uit die nieuwsbrief**
+(bijlagen / inline / HTML CDN). Te lage resolutie → AI-upscale van het
+mailbeeld (compositie behouden). Volledig nieuwe AI-beelden alleen als er geen
+bruikbare mailbeelden zijn, en dan pas na akkoord.
 
 Er zit geen vaste klant of voorbeeldcampagne in deze repo. Elke run begint met:
 
 > Voor welke klant wil je PMax-assets op basis van de laatste nieuwsbrief?
 
-Zie [`AGENT.md`](AGENT.md) voor de agent-stappen (Gmail → yaml → validate → handoff).
+Zie [`AGENT.md`](AGENT.md) voor de agent-stappen (Gmail → beelden/upscale → yaml →
+validate → handoff) en [`docs/pipeline-flowchart.md`](docs/pipeline-flowchart.md)
+voor het overzicht.
 
 ## Wat de agent doet en wat de scripts doen
 
@@ -17,7 +22,8 @@ Zie [`AGENT.md`](AGENT.md) voor de agent-stappen (Gmail → yaml → validate �
 | Klant vragen / profiel kiezen | ✅ | |
 | Nieuwsbrief ophalen en lezen | ✅ | |
 | Thema's kiezen, copy schrijven | ✅ | |
-| Beelden prompten | ✅ | |
+| Beelden uit de mail extraheren | ✅ | |
+| AI-upscale bij te lage resolutie | ✅ | |
 | Landingspagina's controleren | ✅ | |
 | Tekenlimieten en assetcounts | | ✅ |
 | Aspect ratio's, bestandsgrootte | | ✅ |
@@ -62,7 +68,7 @@ pip install -e ".[dev]"
 ## Gebruik (na een gevulde campagne-yaml)
 
 ```bash
-# Beelden: één bronbeeld per thema -> alle PMax-ratio's, met en zonder logo
+# Beelden: nieuwsbrief-bronbeelden (evt. na AI-upscale) -> alle PMax-ratio's
 python -m pmax images --client <slug> \
   --input-dir assets/<slug>/base \
   --output-dir runs/<slug>/2026-09-15
@@ -107,7 +113,7 @@ clients/
 └── {slug}.yaml         # merk, domein, logo, gmail-label, tone, verboden claims
 campagnes/
 └── {slug}/{datum}.yaml # per run, gevuld vanuit de nieuwsbrief
-assets/{slug}/          # logo + bronbeelden
+assets/{slug}/          # logo + bronbeelden (uit de nieuwsbrief)
 runs/{slug}/{datum}/    # gegenereerde PMax-ratio's
 pmax/
 ├── specs.py            # Google's getallen
