@@ -1,0 +1,29 @@
+# Klantprofiel. Kopieer via: python -m pmax init --client <slug>
+# Vul dit in vóór je een nieuwsbrief-run start.
+
+name: Klantnaam
+slug: klant-slug
+business_name: Klantnaam          # max 25 tekens, zichtbaar in ads
+base_url: https://www.voorbeeld.nl
+logo: assets/klant-slug/logo-1200.png   # 1:1, min 128x128, aanbevolen 1200x1200
+
+# Gmail: filter nieuwsbrieven naar dit label (één label per klant).
+sources:
+  gmail_label: pmax/klant-slug
+
+# Oplevering
+handoff:
+  team_email: team@voorbeeld.nl
+  drive_folder: Brand/klant-slug
+
+brand:
+  logo_width_ratio: 0.28
+  logo_position: bottom-left   # bottom-left | bottom-right | top-left | top-right
+
+copy:
+  tone: ""                     # bijv. "informeel, concreet, geen superlatieven"
+  cta_default: Meer info
+  # Claims die nooit in headlines/descriptions mogen:
+  forbidden_terms: []
+  # - goedkoopste
+  # - garantie
