@@ -15,6 +15,12 @@ ALLOWED_IMAGE_FORMATS = {"PNG", "JPEG", "GIF"}
 # terug bij afwijking, dus we zijn hier strikt.
 ASPECT_TOLERANCE = 0.01
 
+# Richtlijn voor nieuwsbrief-bronbeelden vóór `pmax images` (agent-stap, geen
+# harde validator). Kortste zijde onder deze waarde (of onder IMAGE_SPECS
+# minimum na crop) → AI-upscale van het mailbeeld; compositie behouden, geen
+# nieuwe scene. Zie AGENT.md §5b en docs/pipeline-flowchart.md.
+NEWSLETTER_SOURCE_MIN_SHORT_SIDE_PX = 600
+
 
 @dataclass(frozen=True)
 class TextSpec:
